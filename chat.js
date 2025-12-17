@@ -58,9 +58,19 @@ document.addEventListener('DOMContentLoaded', () => {
             typingIndicator.style.display = 'none';
 
             if (data.reply) {
-                addMessage(data.reply, 'bot');
+                // Fix: Handle cases where reply might be an object to avoid [object Object]
+                let replyText = data.reply;
+                if (typeof data.reply === 'object') {
+                    // Try to find a text property or stringify as fallback
+                    replyText = data.reply.text || data.reply.content || JSON.stringify(data.reply);
+                }
+                addMessage(replyText, 'bot');
+            } else if (data.text) {
+                addMessage(data.text, 'bot');
             } else {
-                addMessage('Lo siento, hubo un error de conexión.', 'bot');
+                // Debug: Log full data if format is unexpected
+                console.log('Unexpected response:', data);
+                addMessage('Respuesta recibida (ver consola)', 'bot');
             }
 
         } catch (error) {
