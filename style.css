@@ -312,7 +312,7 @@ h1 {
 /* Projects Section */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
 }
 
@@ -534,21 +534,43 @@ footer {
 /* Responsive */
 @media (max-width: 768px) {
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
 
     .navbar {
-        padding: 1rem 5%;
+        padding: 1rem 1.5rem;
     }
 
-    /* Menu will be toggled via JS to display:flex */
+    /* Mobile Menu Keyframes/Styles */
     .nav-links {
         display: none;
+        /* JS handles the opening, but we ensure base mobile structure here */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background: rgba(5, 5, 5, 0.98);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        gap: 2rem;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li a {
+        font-size: 1.5rem;
     }
 
     .hamburger {
         display: block;
         cursor: pointer;
+        z-index: 1001;
+        /* Above the menu */
     }
 
     .hamburger span {
@@ -557,20 +579,60 @@ footer {
         height: 3px;
         background: white;
         margin: 5px 0;
+        transition: all 0.3s ease;
+    }
+
+    /* Hamburger Animation */
+    .hamburger.toggle span:nth-child(1) {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
+
+    .hamburger.toggle span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.toggle span:nth-child(3) {
+        transform: rotate(45deg) translate(-5px, -6px);
+    }
+
+    .section {
+        padding: 4rem 1.5rem;
     }
 
     #hero {
         flex-direction: column;
-        padding-top: 8rem;
+        padding-top: 7rem;
+        padding-bottom: 4rem;
         text-align: center;
+        min-height: auto;
+    }
+
+    .hero-visual {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        top: 0;
+        transform: none;
+        margin-top: 2rem;
+    }
+
+    .orb {
+        width: 300px;
+        height: 300px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        right: auto;
     }
 
     .hero-buttons {
         justify-content: center;
+        flex-wrap: wrap;
     }
 
     .hero-subtitle {
         margin: 0 auto 2rem;
+        font-size: 1rem;
     }
 
     .about-grid,
@@ -578,8 +640,18 @@ footer {
         grid-template-columns: 1fr;
     }
 
+    .stats-grid {
+        grid-template-columns: 1fr;
+        /* Keep stacked or use repeat(2, 1fr) for denser info */
+    }
+
     .timeline {
-        margin-left: 0.5rem;
+        margin-left: 0;
+        padding-left: 1.5rem;
+    }
+
+    .contact-box {
+        padding: 2rem 1.5rem;
     }
 }
 
