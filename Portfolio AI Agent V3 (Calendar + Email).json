@@ -1,0 +1,318 @@
+{
+  "name": "Portfolio AI Agent V3 (Calendar + Email)",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"reply\": \"¡Listo! He agendado la reunión y te envié un correo de confirmación a {{ $('Parsear JSON').item.json.email }}.\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "497f5d52-e592-4866-9d7d-4841bb4adb64",
+      "name": "Respuesta Agendado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        464,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Parsear JSON').item.json.email }}, diazzdamian00@gmail.com",
+        "subject": "Confirmación de Entrevista - Damián Díaz",
+        "message": "=Hola,|Te confirmo que hemos agendado la entrevista para el día {{ DateTime.fromISO($('Parsear JSON').item.json.date).setLocale('es').toFormat(\"cccc d 'de' LLLL 'a las' HH:mm\") }} hs. Saludos,Damián (AI Agent)",
+        "options": {}
+      },
+      "id": "b3898632-ff83-4b12-bd05-2bd5c7396ceb",
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        240,
+        1536
+      ],
+      "webhookId": "d70b3a3c-0546-4433-9922-9be79a82d664",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OeCaFi1SYYrH9vaM",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "=diazzdamian00@gmail.com",
+          "mode": "id"
+        },
+        "start": "={{ DateTime.fromISO($json.date).toISO() }}",
+        "end": "={{ DateTime.fromISO($json.date).plus({hours: 1}).toISO() }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $json.email }}"
+          ],
+          "description": "Agendado por Portfolio AI Agent",
+          "summary": "=Reunión con {{ $('Parsear JSON').item.json.recruiter_name || 'Recruiter' }} ({{ $('Parsear JSON').item.json.company || 'Empresa' }})"
+        }
+      },
+      "id": "0614bff4-c37f-4c21-a11a-1b00a57b3262",
+      "name": "Crear Evento",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [
+        16,
+        1536
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "CjS2u0YdMnvS5ziX",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"reply\": \"{{ $json.reply }}\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "1cead122-64c2-4bca-ad02-a13c5befc5d1",
+      "name": "Respuesta Normal",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        16,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.intent }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "schedule",
+              "output": 1
+            }
+          ]
+        },
+        "fallbackOutput": 0
+      },
+      "id": "2409b806-cfa6-4210-a74b-54ae84a24a73",
+      "name": "Router (Intent)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let rawText = '';\n// 1. Detectar output del Agente (Formato LangChain)\nif ($json.output) {\n    rawText = $json.output;\n}\nelse if ($json.text) {\n    rawText = $json.text;\n}\n// 2. Fallbacks viejos (Formato OpenAI puro)\nelse if ($json.content && Array.isArray($json.content)) {\n    rawText = $json.content[0]?.text;\n}\nelse {\n    // Ultimo recurso: stringify\n    const val = $json.message?.content || $json;\n    rawText = (typeof val === 'object') ? JSON.stringify(val) : val;\n}\n// 3. Parseo y Limpieza\nlet parsed = {};\ntry {\n    const clean = String(rawText).replace(/^```json\\n?|\\n?```$/g, '');\n    parsed = JSON.parse(clean);\n} catch (e) {\n    // Si falla el parseo, devolvemos texto plano limpio\n    const safeText = String(rawText).replace(/\"/g, \"'\");\n    parsed = { reply: safeText, intent: \"question\" };\n}\n// 4. Seguridad Final (Evitar errores 'property isn't object')\nif (!parsed || typeof parsed !== 'object') {\n    parsed = { reply: \"Error procesando respuesta.\", intent: \"question\" };\n}\nreturn { json: parsed };"
+      },
+      "id": "534e78d2-bd39-4c37-984c-ba6dfed2d9dd",
+      "name": "Parsear JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "6e3aebbe-6a2d-404b-a5ff-84ef07470cb8",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        1440
+      ],
+      "webhookId": "portfolio-chat"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ typeof $json.body === 'string' ? JSON.parse($json.body).message : $json.body.message }}",
+        "options": {
+          "systemMessage": "=Eres el Asistente Virtual Inteligente del Portfolio de Damián Díaz.\nHOY ES: {{ $now }} (Usalo para calcular fechas relativas).\n### PERFIL PROFESIONAL (REAL)\n- **Título**: Estudiante de Derecho (UBA) + Desarrollador de Software.\n- **Rol**: Ejerce como Backend Developer & AI Specialist (Experiencia sólida).\n- **Estilo**: Combina lógica jurídica con arquitectura de sistemas.\n- **Debilidades**: \"Perfeccionista del código limpio, prioriza calidad sobre velocidad.\"\n### OBJETIVO\nResponder preguntas y AGENDAR entrevistas.\n### REQUISITOS OBLIGATORIOS PARA AGENDAR\nPara confirmar una reunión, NECESITAS estos 4 datos:\n1. Email\n2. Fecha y Hora\n3. Nombre de la persona\n4. Nombre de la Empresa\n### REGLA DE ORO (IMPORTANTE)\n- **Si falta CUALQUIERA de los datos anteriores**: Tu intent DEBE SER \"question\". Pide el dato que falta.\n- **NO uses \"schedule\"** hasta tener TODOS los datos confirmados.\n### FORMATO DE SALIDA (JSON)\n{ \n  \"intent\": \"question\" | \"schedule\", \n  \"reply\": \"Respuesta...\", \n  \"date\": \"YYYY-MM-DDTHH:mm:ss\",\n  \"email\": \"...\",\n  \"recruiter_name\": \"...\",\n  \"company\": \"...\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -992,
+        1440
+      ],
+      "id": "89a6972e-77b8-472e-b234-3af1c4a9954a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        1648
+      ],
+      "id": "5db96e1d-41fd-4a4f-b203-c3f38b66b07f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ggJOc3jud4gTmK3Y",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -928,
+        1648
+      ],
+      "id": "d691048b-239d-4343-ba4b-31f7514ca132",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Enviar Email": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Agendado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Evento": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router (Intent)": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Normal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear Evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear JSON": {
+      "main": [
+        [
+          {
+            "node": "Router (Intent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parsear JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timezone": "America/Argentina/Buenos_Aires"
+  },
+  "versionId": "c8fd5942-17be-4438-8171-172347001592",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d28c1ad04afbec722b11729aab67ee5702483e5134d4304cb703e7a652222b85"
+  },
+  "id": "pnw8H0oSxKMmlrc7",
+  "tags": []
+}

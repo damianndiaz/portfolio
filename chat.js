@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendMessage = document.getElementById('sendMessage');
     const typingIndicator = document.getElementById('typingIndicator');
 
-    // URL DE PRODUCCIÓN DE N8N (Ya configurada)
+    // URL DE PRODUCCIÓN DE N8N
     const N8N_WEBHOOK_URL = 'https://damiannndiazz.app.n8n.cloud/webhook/chat';
 
     // Toggle Chat
@@ -80,7 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // Debug: Log full data if format is unexpected
                 console.log('Unexpected response:', data);
-                addMessage('Respuesta recibida (ver consola)', 'bot');
+                // Si la respuesta está vacía pero fue exitosa, no mostramos error,
+                // pero si n8n manda algo raro, lo mostramos.
+                if (Object.keys(data).length > 0) {
+                    addMessage(JSON.stringify(data), 'bot');
+                } else {
+                    addMessage('...', 'bot');
+                }
             }
 
         } catch (error) {
