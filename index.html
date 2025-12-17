@@ -22,10 +22,9 @@
     <nav class="navbar glass">
         <div class="logo">DAMIAN<span class="accent">DIAZ</span></div>
         <ul class="nav-links">
-            <li><a href="#about">Sobre Mí</a></li>
-            <li><a href="#experience">Experiencia</a></li>
             <li><a href="#projects">Proyectos</a></li>
-            <li><a href="#skills">Stack</a></li>
+            <li><a href="#about">Perfil</a></li>
+            <li><a href="#services">Servicios</a></li>
             <li><a href="#contact" class="cta-btn">Contactar</a></li>
         </ul>
         <div class="hamburger">
@@ -53,82 +52,9 @@
         </div>
     </header>
 
-    <section id="about" class="section">
-        <div class="container">
-            <h2 class="section-title">Sobre <span class="accent">Mí</span></h2>
-            <div class="about-grid">
-                <div class="about-text glass-card">
-                    <p>Soy <strong>Estudiante de Derecho</strong> y un apasionado por la tecnología. Mi perfil híbrido
-                        combina el pensamiento lógico y analítico del derecho con la innovación técnica.</p>
-                    <p>Investigo constantemente sobre <strong>Inteligencia Artificial</strong> y me dedico a probar las
-                        últimas tendencias para aplicarlas en soluciones reales. Desde 2024, trabajo implementando
-                        Agentes de IA en VaoVao, transformando procesos manuales en sistemas automatizados eficientes.
-                    </p>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card glass-card">
-                        <i class="fas fa-robot"></i>
-                        <h3>IA & Agents</h3>
-                        <p>Implementación de LLMs</p>
-                    </div>
-                    <div class="stat-card glass-card">
-                        <i class="fas fa-project-diagram"></i>
-                        <h3>n8n</h3>
-                        <p>Flujos Automatizados</p>
-                    </div>
-                    <div class="stat-card glass-card">
-                        <i class="fas fa-code"></i>
-                        <h3>Backend</h3>
-                        <p>APIs & Procesamiento</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="experience" class="section">
-        <div class="container">
-            <h2 class="section-title">Trayectoria <span class="accent">Profesional</span></h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content glass-card">
-                        <div class="date">2024 - Presente</div>
-                        <h3>Desarrollador Backend Jr & AI Specialist</h3>
-                        <h4>VaoVao</h4>
-                        <ul class="job-details">
-                            <li>Desarrollo e implementación de <strong>Agentes de IA</strong> para optimizar procesos
-                                internos.</li>
-                            <li>Diseño de soluciones automatizadas para problemas mecánicos de usuarios.</li>
-                            <li>Integración de APIs y creación de scripts de procesamiento de datos.</li>
-                            <li>Rol previo como QA Tester, asegurando la calidad del software.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="education" class="section">
-        <div class="container">
-            <h2 class="section-title">Formación <span class="accent">Continua</span></h2>
-            <div class="glass-card">
-                <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-certificate" style="color: var(--accent-secondary);"></i>
-                    Santander Open Academy
-                </h3>
-                <ul class="job-details">
-                    <li>Curso de Introducción a la IA Generativa</li>
-                    <li>Curso de Inteligencia Artificial y productividad</li>
-                    <li>Curso de Introducción a la programación con Python</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
     <section id="projects" class="section">
         <div class="container">
-            <h2 class="section-title">Proyectos <span class="accent">Destacados</span></h2>
+            <h2 class="section-title">Trabajos <span class="accent">Realizados</span></h2>
             <div class="projects-grid">
                 <!-- Project 1: Desktop Automation App -->
                 <article class="project-card glass-card">
@@ -139,16 +65,18 @@
                     <div class="project-info">
                         <div class="tags">
                             <span class="tag">Desktop App</span>
+                            <span class="tag">Python</span>
                             <span class="tag">Automation</span>
-                            <span class="tag">Image Processing</span>
                         </div>
                         <h3>Tema Calcos Studio Pro</h3>
-                        <p>Aplicación de escritorio propietaria diseñada para revolucionar el flujo de trabajo de
-                            pre-impresión.</p>
+                        <p>Software de escritorio integral que automatiza la preparación de archivos de impresión.</p>
                         <ul class="project-features">
-                            <li><i class="fas fa-check"></i> Ingesta automática de diseños (logos/imágenes).</li>
-                            <li><i class="fas fa-check"></i> Generación de archivos listos para plotters Mimaki.</li>
-                            <li><i class="fas fa-check"></i> Eliminación total del armado manual.</li>
+                            <li><i class="fas fa-check"></i> <strong>Problema:</strong> Armado manual lento y propenso a
+                                errores.</li>
+                            <li><i class="fas fa-check"></i> <strong>Solución:</strong> Procesamiento automático de
+                                imágenes y layouts.</li>
+                            <li><i class="fas fa-check"></i> <strong>Impacto:</strong> Ahorro del 90% del tiempo de
+                                pre-impresión.</li>
                         </ul>
                     </div>
                 </article>
@@ -157,32 +85,130 @@
                 <article class="project-card glass-card">
                     <div class="project-image-container">
                         <div class="placeholder-image gradient-2">
-                            <i class="fas fa-network-wired"></i>
+                            <i class="fas fa-brain" style="font-size: 3rem;"></i>
                         </div>
                     </div>
                     <div class="project-info">
                         <div class="tags">
                             <span class="tag">n8n</span>
-                            <span class="tag">LLMs</span>
-                            <span class="tag">API Integration</span>
+                            <span class="tag">AI Agents</span>
+                            <span class="tag">Enterprise</span>
                         </div>
-                        <h3>Ecosistema de Agentes IA</h3>
-                        <p>Suite de soluciones implementada en VaoVao para automatizar procesos mecánicos empresariales.
-                        </p>
+                        <h3>Agentes IA Corporativos</h3>
+                        <p>Implementación de ecosistema de agentes inteligentes para VaoVao.</p>
                         <ul class="project-features">
-                            <li><i class="fas fa-check"></i> Orquestación de flujos complejos.</li>
-                            <li><i class="fas fa-check"></i> Interacción con múltiples APIs.</li>
-                            <li><i class="fas fa-check"></i> Reducción significativa de carga operativa.</li>
+                            <li><i class="fas fa-check"></i> <strong>Problema:</strong> Procesos repetitivos de atención
+                                y gestión.</li>
+                            <li><i class="fas fa-check"></i> <strong>Solución:</strong> Agentes autónomos orquestados
+                                con n8n.</li>
+                            <li><i class="fas fa-check"></i> <strong>Impacto:</strong> Automatización de respuestas y
+                                flujos de datos.</li>
                         </ul>
+                    </div>
+                </article>
+                <!-- Project 3: UBA Pasantías Monitor -->
+                <article class="project-card glass-card">
+                    <div class="project-image-container">
+                        <div class="placeholder-image gradient-2"
+                            style="background: linear-gradient(45deg, #FF6B6B, #556270);">
+                            <i class="fas fa-university" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">GitHub Actions</span>
+                            <span class="tag">GPT-4o-mini</span>
+                            <span class="tag">Web Scraping</span>
+                        </div>
+                        <h3>UBA Pasantías Monitor AI</h3>
+                        <p>Sistema inteligente que monitorea ofertas de pasantías, notifica y genera cartas de
+                            presentación automáticas.</p>
+                        <ul class="project-features">
+                            <li><i class="fas fa-check"></i> <strong>24/7 en la Nube:</strong> Scraping diario
+                                automático con GitHub Actions.</li>
+                            <li><i class="fas fa-check"></i> <strong>IA Generativa:</strong> Redacción automática de
+                                emails de aplicación con GPT-4o.</li>
+                            <li><i class="fas fa-check"></i> <strong>Alertas:</strong> Notificaciones HTML profesionales
+                                ante nuevas ofertas.</li>
+                        </ul>
+                        <div style="margin-top: 1.5rem;">
+                            <a href="https://github.com/damianndiaz/uba-pasantias-monitor" target="_blank"
+                                class="btn secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
+                                <i class="fab fa-github"></i> Ver Código
+                            </a>
+                        </div>
                     </div>
                 </article>
             </div>
         </div>
     </section>
 
-    <section id="skills" class="section">
+    <section id="about" class="section">
         <div class="container">
-            <h2 class="section-title">Stack <span class="accent">Tecnológico</span></h2>
+            <h2 class="section-title">Mi <span class="accent">Perfil</span></h2>
+            <div class="about-grid">
+                <div class="about-text glass-card">
+                    <h3>Abogado + Developer</h3>
+                    <p style="margin-top: 1rem;">La combinación única de <strong>Lógica Legal</strong> y
+                        <strong>Desarrollo Técnico</strong> me permite abordar problemas desde dos ángulos: cumplimiento
+                        normativo/estructural y eficiencia tecnológica.
+                    </p>
+                    <p>Actualmente me desempeño en VaoVao transformando operaciones manuales en flujos de IA robustos.
+                        Estudio Derecho pero mi carrera profesional está 100% enfocada en la Tecnología.</p>
+                </div>
+                <div class="skills-wrapper glass-card" style="display: block;">
+                    <h3 style="color: var(--accent-secondary); font-size: 1.2rem; margin-bottom: 1rem;">Stack Principal
+                    </h3>
+                    <div class="skill-list">
+                        <span class="skill-pill">n8n</span>
+                        <span class="skill-pill">Python</span>
+                        <span class="skill-pill">API Gemini/OpenAI</span>
+                        <span class="skill-pill">Roboflow</span>
+                        <span class="skill-pill">Git</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compressed Experience Section -->
+    <section id="experience" class="section" style="padding-top: 0;">
+        <div class="container">
+            <h3
+                style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-secondary);">
+                Trayectoria y Formación</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- Experience Card -->
+                <div class="glass-card" style="padding: 1.5rem;">
+                    <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Experiencia Laboral</h4>
+                    <div>
+                        <strong style="display: block; font-size: 1.1rem;">Desarrollador Backend Jr & AI
+                            Specialist</strong>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">VaoVao | 2024 - Presente</span>
+                        <p style="margin-top: 0.5rem; font-size: 0.95rem; color: #ccc;">Desarrollo de Agentes IA,
+                            Scripts de automatización y Testing.</p>
+                    </div>
+                </div>
+
+                <!-- Education Card -->
+                <div class="glass-card" style="padding: 1.5rem;">
+                    <h4 style="color: var(--accent-secondary); margin-bottom: 0.5rem;">Cursos & Certificaciones</h4>
+                    <ul class="job-details" style="margin-top: 0;">
+                        <li style="margin-bottom: 0.3rem;">IA Generativa (Santander)</li>
+                        <li style="margin-bottom: 0.3rem;">IA y Productividad (Santander)</li>
+                        <li style="margin-bottom: 0.3rem;">Python Programming (Santander)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section kept for comprehensive list if needed, or we can hide it since principal stack is above. 
+         Let's keep the detailed one but maybe title it "Stack Completo" -->
+    <section id="services" class="section">
+        <div class="container">
+            <h2 class="section-title">Stack <span class="accent">Completo</span></h2>
             <div class="skills-wrapper glass-card">
                 <div class="skill-category">
                     <h3>Automatización & IA</h3>
@@ -222,9 +248,7 @@
         <div class="container">
             <div class="contact-box glass-card">
                 <h2>¿Hablamos?</h2>
-                <p>Estoy disponible para aportar mi experiencia en automatización y desarrollo al equipo de
-                    <strong>Lumen</strong>.
-                </p>
+                <p>Estoy disponible para aportar mi experiencia en automatización y desarrollo.</p>
                 <div class="contact-links">
                     <a href="mailto:diazzdamian00@gmail.com" class="btn primary"><i class="fas fa-envelope"></i>
                         diazzdamian00@gmail.com</a>
@@ -232,6 +256,8 @@
                             class="fab fa-linkedin"></i> LinkedIn</a>
                     <a href="https://github.com/damianndiaz" target="_blank" class="btn secondary"><i
                             class="fab fa-github"></i> GitHub</a>
+                    <a href="https://wa.me/5491132662924" target="_blank" class="btn secondary"><i
+                            class="fab fa-whatsapp"></i> WhatsApp</a>
                 </div>
             </div>
         </div>
