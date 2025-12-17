@@ -43,13 +43,23 @@ document.addEventListener('DOMContentLoaded', () => {
         typingIndicator.style.display = 'block';
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
+        // Generate or retrieve Session ID for Memory
+        let sessionId = localStorage.getItem('chat_session_id');
+        if (!sessionId) {
+            sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('chat_session_id', sessionId);
+        }
+
         try {
             const response = await fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: text })
+                body: JSON.stringify({
+                    message: text,
+                    sessionId: sessionId
+                })
             });
 
             const data = await response.json();
