@@ -10,11 +10,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL DE PRODUCCIÓN DE N8N
     const N8N_WEBHOOK_URL = 'https://damiannndiazz.app.n8n.cloud/webhook/chat';
 
+    // Suggestion Chips Data
+    const suggestions = [
+        { text: "📅 Agendar Reunión", value: "Quiero agendar una reunión" },
+        { text: "💻 Ver Tech Stack", value: "¿Cuál es tu stack tecnológico?" },
+        { text: "📄 Descargar CV", value: "¿Me puedes pasar el CV?" },
+        { text: "🤖 ¿Cómo funcionas?", value: "Explícame cómo funcionas técnicamente" }
+    ];
+
+    let chipsContainer = null;
+
     // Toggle Chat
     chatToggle.addEventListener('click', () => {
         chatWindow.classList.toggle('active');
         if (chatWindow.classList.contains('active')) {
             chatInput.focus();
+            // Render suggestions if this is the first opening (only default bot msg exists)
+            // or if we want to show them effectively as a "menu" every time it opens empty state
+            if (!chipsContainer && chatMessages.children.length <= 1) {
+                renderSuggestions();
+            }
         }
     });
 
@@ -22,18 +37,50 @@ document.addEventListener('DOMContentLoaded', () => {
         chatWindow.classList.remove('active');
     });
 
+    function renderSuggestions() {
+        if (chipsContainer) return;
+
+        chipsContainer = document.createElement('div');
+        chipsContainer.classList.add('suggestion-chips');
+
+        suggestions.forEach(suggestion => {
+            const chip = document.createElement('div');
+            chip.classList.add('chip');
+            chip.textContent = suggestion.text;
+            chip.addEventListener('click', () => {
+                handleSend(suggestion.value);
+            });
+            chipsContainer.appendChild(chip);
+        });
+
+        chatMessages.appendChild(chipsContainer);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
     // Send Message Logic
     function addMessage(text, sender) {
         const div = document.createElement('div');
         div.classList.add('message', sender);
         div.textContent = text;
+
+        // If chips exist, we insert before them? Or just append?
+        // Actually, if we are adding a message, we essentially cleared chips in handleSend.
+        // But if the BOT adds a message, we might theoretically want chips to stay?
+        // No, in this simple version, any interaction clears the initial menu.
+
         chatMessages.appendChild(div);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    async function handleSend() {
-        const text = chatInput.value.trim();
+    async function handleSend(manualText = null) {
+        const text = manualText || chatInput.value.trim();
         if (!text) return;
+
+        // Remove chips if they exist, as conversation has started
+        if (chipsContainer) {
+            chipsContainer.remove();
+            chipsContainer = null;
+        }
 
         // Add user message
         addMessage(text, 'user');
@@ -96,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    sendMessage.addEventListener('click', handleSend);
+    sendMessage.addEventListener('click', () => handleSend());
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSend();
     });
