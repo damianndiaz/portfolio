@@ -10,25 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL DE PRODUCCIÓN DE N8N
     const N8N_WEBHOOK_URL = 'https://damiannndiazz.app.n8n.cloud/webhook/chat';
 
-    // Suggestion Chips Data
-    const suggestions = [
-        { text: "📅 Agendar Reunión", value: "Quiero agendar una reunión" },
-        { text: "💻 Ver Tech Stack", value: "¿Cuál es tu stack tecnológico?" },
-        { text: "📄 Descargar CV", value: "¿Me puedes pasar el CV?" },
-        { text: "🤖 ¿Cómo funcionas?", value: "Explícame cómo funcionas técnicamente" }
+    // --- DATA: Suggestion Chips ---
+    const MSG_AGENDAR = "Quiero agendar una reunión";
+    const MSG_STACK = "¿Cuál es tu stack tecnológico?";
+    const MSG_CV = "¿Me puedes pasar el CV?";
+    const MSG_COMO = "Explícame cómo funcionas técnicamente";
+    const MSG_LINKEDIN = "¿Tienes LinkedIn?";
+    const MSG_GITHUB = "¿Cuál es tu GitHub?";
+
+    // Default start chips
+    const startSuggestions = [
+        { text: "📅 Agendar Reunión", value: MSG_AGENDAR },
+        { text: "💻 Ver Tech Stack", value: MSG_STACK },
+        { text: "📄 Descargar CV", value: MSG_CV },
+        { text: "🤖 ¿Cómo funcionas?", value: MSG_COMO }
     ];
 
-    let chipsContainer = null;
+    let currentChipsContainer = null;
 
     // Toggle Chat
     chatToggle.addEventListener('click', () => {
         chatWindow.classList.toggle('active');
         if (chatWindow.classList.contains('active')) {
             chatInput.focus();
-            // Render suggestions if this is the first opening (only default bot msg exists)
-            // or if we want to show them effectively as a "menu" every time it opens empty state
-            if (!chipsContainer && chatMessages.children.length <= 1) {
-                renderSuggestions();
+            // Show start suggestions if no messages exist yet
+            if (chatMessages.children.length <= 1) {
+                renderSuggestions(startSuggestions);
             }
         }
     });
@@ -37,37 +44,35 @@ document.addEventListener('DOMContentLoaded', () => {
         chatWindow.classList.remove('active');
     });
 
-    function renderSuggestions() {
-        if (chipsContainer) return;
+    // Function to render any list of chips
+    function renderSuggestions(suggestionsList) {
+        // If there are existing active chips, remove them first (unlikely but safe)
+        if (currentChipsContainer) {
+            currentChipsContainer.remove();
+        }
 
-        chipsContainer = document.createElement('div');
-        chipsContainer.classList.add('suggestion-chips');
+        const container = document.createElement('div');
+        container.classList.add('suggestion-chips');
 
-        suggestions.forEach(suggestion => {
+        suggestionsList.forEach(suggestion => {
             const chip = document.createElement('div');
             chip.classList.add('chip');
             chip.textContent = suggestion.text;
             chip.addEventListener('click', () => {
                 handleSend(suggestion.value);
             });
-            chipsContainer.appendChild(chip);
+            container.appendChild(chip);
         });
 
-        chatMessages.appendChild(chipsContainer);
+        chatMessages.appendChild(container);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        currentChipsContainer = container;
     }
 
-    // Send Message Logic
     function addMessage(text, sender) {
         const div = document.createElement('div');
         div.classList.add('message', sender);
         div.textContent = text;
-
-        // If chips exist, we insert before them? Or just append?
-        // Actually, if we are adding a message, we essentially cleared chips in handleSend.
-        // But if the BOT adds a message, we might theoretically want chips to stay?
-        // No, in this simple version, any interaction clears the initial menu.
-
         chatMessages.appendChild(div);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -76,21 +81,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = manualText || chatInput.value.trim();
         if (!text) return;
 
-        // Remove chips if they exist, as conversation has started
-        if (chipsContainer) {
-            chipsContainer.remove();
-            chipsContainer = null;
+        // 1. Remove chips immediately when user interacts
+        if (currentChipsContainer) {
+            currentChipsContainer.remove();
+            currentChipsContainer = null;
         }
 
-        // Add user message
+        // 2. Add User Message
         addMessage(text, 'user');
         chatInput.value = '';
 
-        // Show typing indicator
+        // 3. Show Typing
         typingIndicator.style.display = 'block';
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Generate or retrieve Session ID for Memory
         let sessionId = localStorage.getItem('chat_session_id');
         if (!sessionId) {
             sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
@@ -100,47 +104,89 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: text,
-                    sessionId: sessionId
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text, sessionId: sessionId })
             });
-
             const data = await response.json();
 
-            // Hide typing indicator
+            // Hide typing
             typingIndicator.style.display = 'none';
 
+            // 4. Add Bot Message
+            let replyText = "";
             if (data.reply) {
-                // Fix: Handle cases where reply might be an object to avoid [object Object]
-                let replyText = data.reply;
                 if (typeof data.reply === 'object') {
-                    // Try to find a text property or stringify as fallback
                     replyText = data.reply.text || data.reply.content || JSON.stringify(data.reply);
-                }
-                addMessage(replyText, 'bot');
-            } else if (data.text) {
-                addMessage(data.text, 'bot');
-            } else {
-                // Debug: Log full data if format is unexpected
-                console.log('Unexpected response:', data);
-                // Si la respuesta está vacía pero fue exitosa, no mostramos error,
-                // pero si n8n manda algo raro, lo mostramos.
-                if (Object.keys(data).length > 0) {
-                    addMessage(JSON.stringify(data), 'bot');
                 } else {
-                    addMessage('...', 'bot');
+                    replyText = data.reply;
                 }
+            } else if (data.text) {
+                replyText = data.text;
+            } else {
+                if (Object.keys(data).length > 0) replyText = JSON.stringify(data);
+                else replyText = '...';
+            }
+            addMessage(replyText, 'bot');
+
+            // 5. DECIDE NEXT CHIPS (Contextual)
+            // Determine logic based on what the user Last Sent (text variable)
+            const nextChips = getNextChips(text);
+            if (nextChips && nextChips.length > 0) {
+                renderSuggestions(nextChips);
             }
 
         } catch (error) {
             console.error('Error sending message:', error);
             typingIndicator.style.display = 'none';
-            addMessage('Error: No pude conectar con el servidor (¿Está encendido el n8n?).', 'bot');
+            addMessage('Error: No pude conectar con el servidor.', 'bot');
         }
+    }
+
+    // Logic to select "next" chips based on conversation context
+    function getNextChips(lastUserText) {
+        const lowerText = lastUserText.toLowerCase();
+
+        // Si el usuario intentó agendar, quizás no mostramos nada o mostramos confirmaciones
+        // Pero como no sabemos si el bot pidió fecha o email, mejor ofrecemos opciones "safe".
+        if (lowerText.includes('agendar') || lowerText.includes('reunión')) {
+            // Si está agendando, quizás quiera ver el CV mientras espera
+            return [
+                { text: "📄 Ver CV", value: MSG_CV },
+                { text: "💻 Stack", value: MSG_STACK }
+            ];
+        }
+
+        // Si preguntó por Stack, le ofrecemos Proyectos (no tenemos chip directo de proyectos, usamos GitHub/CV) o Agendar
+        if (lowerText.includes('stack') || lowerText.includes('tecnología')) {
+            return [
+                { text: "📅 Agendar ahora", value: MSG_AGENDAR },
+                { text: "🐱 Mi GitHub", value: MSG_GITHUB },
+                { text: "📄 Ver CV", value: MSG_CV }
+            ];
+        }
+
+        // Si pidió CV, le ofrecemos LinkedIn o Agendar
+        if (lowerText.includes('cv') || lowerText.includes('curriculum')) {
+            return [
+                { text: "🔗 LinkedIn", value: MSG_LINKEDIN },
+                { text: "📅 Agendar Entrevista", value: MSG_AGENDAR }
+            ];
+        }
+
+        // Si preguntó cómo funciona, le ofrecemos ver el código o probarlo (Agendar)
+        if (lowerText.includes('funciona') || lowerText.includes('técnicamente')) {
+            return [
+                { text: "🐱 Ir al GitHub", value: MSG_GITHUB },
+                { text: "📅 Probar Agendar", value: MSG_AGENDAR }
+            ];
+        }
+
+        // Default / Fallback (si escribió algo random) -> Volvemos al menú principal (o mezclado)
+        return [
+            { text: "📅 Agendar Reunión", value: MSG_AGENDAR },
+            { text: "💻 Stack", value: MSG_STACK },
+            { text: "📄 CV", value: MSG_CV }
+        ];
     }
 
     sendMessage.addEventListener('click', () => handleSend());
